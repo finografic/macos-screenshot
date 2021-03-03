@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# ----------------------------------------------------
+# MacOS ScreenCapture TWEAK !!
+# Takes a screenshot to the clipboard AND saves the
+# clipboard image to a file in PNG format.
+# ----------------------------------------------------
+# Filename: sreenshot (executable)
+# Recommended path: /usr/local/bin 
+# make sure file is executable!
+# ----------------------------------------------------
+# Author: Justin Rankin - https://github.com/finografic
+# inspired by: https://apple.stackexchange.com/questions/308937/automate-saving-screenshot-already-in-clipboard-to-a-file-in-bash
+# ----------------------------------------------------
+
+screencapture -c -i -x
+
+destination=$HOME/Pictures/screenshots
+
+# MacOS DEFAULT FORMAT: "Screenshot 2021-03-02 at 18.49.01.png"
+# filename="Screenshot $(date +%Y-%m-%d\ at\ %H.%M.%S).png";
+# filename="screenshot_$(date +%Y-%m-%d)_$(date +%H\h%M\s%S).png";
+filename="screenshot_$(date +%Y%m%d)_$(date +%H.%M.%S).png";
+
+if [ $# -ne 0 ]; then
+    if [[ -d $1 ]]; then
+        if [ "$1" != "." ]; then folder=$1; fi
+    else
+        a=$(dirname "$1")    
+        b=$(basename "$1" .png)
+
+        if [ "$b" != "" ]; then filename=$b.png; fi
+
+        if [ "$a" != "." ]; then destination=$a; fi
+    fi
+fi
+
+osascript -e "tell application \"System Events\" to ¬
+        write (the clipboard as «class PNGf») to ¬
+        (make new file at folder \"$destination\" ¬
+        with properties {name:\"$filename\"})";
+        
